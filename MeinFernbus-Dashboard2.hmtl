@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Mein Fernbus-Dashboard 12.1</title>
+<style>
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #0b0b0b;
+  color: #eee;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+header {
+  background: linear-gradient(90deg, #0a84ff, #1c1c1e);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+#clock { font-size: 22px; }
+#date { font-size: 14px; color: #aaa; }
+#map {
+  flex: 1;
+  background: url('https://upload.wikimedia.org/wikipedia/commons/6/6f/BlankMap-Europe-v4.png') center/cover no-repeat;
+  border-top: 3px solid #222;
+  border-bottom: 3px solid #222;
+  position: relative;
+}
+#stops {
+  background: #1c1c1e;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+input {
+  background: #222;
+  border: 2px solid #0a84ff;
+  border-radius: 6px;
+  color: #fff;
+  padding: 8px;
+  width: 70%;
+  text-align: center;
+  font-size: 15px;
+}
+button {
+  background: #0a84ff;
+  border: none;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin: 4px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+button:hover { background: #0066cc; }
+#nextStop {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #0af;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>🚌 Mein Fernbus-Dashboard 12.1</div>
+  <div>
+    <div id="clock">--:--</div>
+    <div id="date">--.--.--</div>
+  </div>
+</header>
+
+<div id="map"></div>
+
+<section id="stops">
+  <input id="start" placeholder="Start z. B. Berlin ZOB">
+  <input id="ziel" placeholder="Ziel z. B. Hamburg Hbf">
+  <input id="halt" placeholder="Nächster Halt z. B. Braunschweig">
+  <div>
+    <button onclick="updateInfo()">Aktualisieren</button>
+    <button onclick="sayStop()">Ansage abspielen 🎤</button>
+  </div>
+  <div id="nextStop">🧭 Route: – → – | 🚏 Nächster Halt: –</div>
+</section>
+
+<script>
+// Uhrzeit + Datum
+function updateClock() {
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  document.getElementById("date").textContent =
+    now.toLocaleDateString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Start/Ziel/Halt aktualisieren
+function updateInfo() {
+  const s = document.getElementById('start').value || '?';
+  const z = document.getElementById('ziel').value || '?';
+  const h = document.getElementById('halt').value || '–';
+  document.getElementById('nextStop').innerHTML =
+    `🧭 Route: <b>${s}</b> → <b>${z}</b> | 🚏 Nächster Halt: <b>${h}</b>`;
+}
+
+// Ansage per iPad Text-to-Speech
+function sayStop() {
+  const h = document.getElementById('halt').value;
+  const msg = new SpeechSynthesisUtterance(
+    h ? `Nächster Halt: ${h}` : `Keine Haltestelle ausgewählt`
+  );
+  msg.lang = 'de-DE';
+  window.speechSynthesis.speak(msg);
+}
+</script>
+
+</body>
+</html>
